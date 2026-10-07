@@ -1,0 +1,28 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "JWT_SECRET": "@jwt_secret",
+    "NEXTAUTH_URL": "@nextauth_url",
+    "NEXT_PUBLIC_API_URL": "@next_public_api_url",
+    "NEXT_PUBLIC_APP_URL": "@next_public_app_url",
+    "NEXTAUTH_SECRET": "@nextauth_secret"
+  },
+  "buildConfig": {
+    "ignore": [
+      ".git",
+      ".gitignore",
+      "README.md",
+      "node_modules"
+    ]
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
+}
