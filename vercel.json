@@ -3,18 +3,5 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "outputDirectory": ".next",
-  "buildConfig": {
-    "ignore": [
-      ".git",
-      ".gitignore",
-      "README.md",
-      "node_modules"
-    ]
-  },
-  "git": {
-    "deploymentEnabled": {
-      "main": true
-    }
-  }
+  "outputDirectory": ".next"
 }
