@@ -1,0 +1,159 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  password String
+  name String
+  phone String?
+  profileImage String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+  referralCode ReferralCode?
+  referredBy ReferralCode?
+  rewards UserReward[]
+  workouts Workout[]
+  products UserProduct[]
+}
+
+model Membership {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name String
+  type String // "Básico", "Premium", "VIP"
+  service String // "Gimnasio", "MMA", "Muaytai", "Jiu Jitsu", "Kickboxing"
+  price Float
+  duration Int // in days (30, 90, 365)
+
+  startDate DateTime @default(now())
+  endDate DateTime
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  loyaltyPoints Int @default(0)
+}
+
+model ReferralCode {
+  id String @id @default(cuid())
+  userId String @unique
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  code String @unique
+  referredUsers User[] @relation("ReferredBy")
+  referralCount Int @default(0)
+  rewardsEarned Float @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reward {
+  id String @id @default(cuid())
+  name String
+  description String
+  points Int // points required
+  value Float // monetary value
+  category String // "Descuento", "Acceso", "Producto"
+
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userRewards UserReward[]
+}
+
+model UserReward {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rewardId String
+  reward Reward @relation(fields: [rewardId], references: [id])
+
+  points Int
+  status String // "pendiente", "reclamado", "usado"
+  expiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id String @id @default(cuid())
+  name String
+  description String
+  category String // "Suplementos", "Ropa", "Accesorios", "Equipamiento"
+
+  price Float
+  stock Int @default(0)
+  image String?
+
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userProducts UserProduct[]
+}
+
+model UserProduct {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  productId String
+  product Product @relation(fields: [productId], references: [id])
+
+  quantity Int
+  purchasedAt DateTime @default(now())
+}
+
+model WorkoutPlan {
+  id String @id @default(cuid())
+  name String
+  description String
+  service String // "Gimnasio", "MMA", "Muaytai", "Jiu Jitsu", "Kickboxing"
+  difficulty String // "Principiante", "Intermedio", "Avanzado"
+
+  exercises String // JSON stringified array of exercises
+  duration Int // in minutes
+
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workouts Workout[]
+}
+
+model Workout {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  planId String
+  plan WorkoutPlan @relation(fields: [planId], references: [id])
+
+  date DateTime @default(now())
+  completed Boolean @default(false)
+  notes String?
+
+  streakDays Int @default(1) // consecutive days
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
